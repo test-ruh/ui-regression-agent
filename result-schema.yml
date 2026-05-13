@@ -1,0 +1,173 @@
+version: "1.0"
+agent_id: "ui-regression-monitoring-agent"
+
+tables:
+  result_runs:
+    description: One monitoring execution and its metadata.
+    writable: true
+    write_mode: upsert
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+        description: Primary identifier for the monitoring run.
+      created_at:
+        type: datetime
+        required: true
+        description: Run start timestamp.
+      status:
+        type: string
+        required: true
+        description: "Run status such as pending, completed, completed_no_findings, or failed."
+      source:
+        type: string
+        required: true
+        description: Origin of the manual or upstream request.
+      summary:
+        type: text
+        description: "Short human-readable summary for the run."
+      payload:
+        type: jsonb
+        required: true
+        description: "Run metadata including target scope, environment, capture parameters, retention context, and report paths."
+    conflict_columns:
+      - id
+    indexes:
+      - columns: [created_at]
+        name: idx_result_runs_created_at
+  result_artifacts:
+    description: "Stored screenshot, video, and manifest media captured during a monitoring run."
+    writable: true
+    write_mode: upsert
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+        description: Primary identifier for the artifact record.
+      run_id:
+        type: uuid
+        required: true
+        description: Owning monitoring run identifier.
+      artifact_type:
+        type: string
+        required: true
+        description: "Artifact type such as screenshot, video, or manifest."
+      label:
+        type: string
+        required: true
+        description: "Page, viewport, flow, or environment label."
+      uri:
+        type: string
+        required: true
+        description: Storage location of the artifact.
+      checksum:
+        type: string
+        description: Integrity reference for the stored artifact.
+      mime_type:
+        type: string
+        required: true
+        description: Artifact content type.
+      captured_at:
+        type: datetime
+        required: true
+        description: Capture timestamp.
+      metadata:
+        type: jsonb
+        required: true
+        description: "Capture metadata including dimensions, viewport, environment, manifest references, and retention."
+    conflict_columns:
+      - id
+    indexes:
+      - columns: [run_id]
+        name: idx_result_artifacts_run_id
+      - columns: [label]
+        name: idx_result_artifacts_label
+  result_baselines:
+    description: "QA-owned baseline references used as read-only visual comparison targets; this agent does not modify them."
+    writable: false
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+        description: Primary identifier for the baseline reference.
+      scope:
+        type: string
+        required: true
+        description: "Baseline scope such as page, viewport, or flow."
+      uri:
+        type: string
+        required: true
+        description: Storage location of the baseline artifact.
+      checksum:
+        type: string
+        description: Integrity reference for the baseline artifact.
+      active:
+        type: boolean
+        required: true
+        description: Marks the active baseline for the scope.
+      metadata:
+        type: jsonb
+        required: true
+        description: Baseline context including thresholds and environment applicability.
+      created_at:
+        type: datetime
+        required: true
+        description: Baseline registration timestamp.
+    indexes:
+      - columns: [scope, active]
+        name: idx_result_baselines_scope_active
+  result_findings:
+    description: Visual regression candidates and comparison outcomes linked to current artifacts and baselines.
+    writable: true
+    write_mode: upsert
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+        description: Primary identifier for the finding.
+      run_id:
+        type: uuid
+        required: true
+        description: Related monitoring run identifier.
+      artifact_id:
+        type: uuid
+        required: true
+        description: Current artifact compared to a baseline.
+      baseline_id:
+        type: uuid
+        required: true
+        description: Baseline artifact used for comparison.
+      severity:
+        type: string
+        required: true
+        description: "Severity label such as info, warning, critical, or manual_review."
+      diff_score:
+        type: float
+        required: true
+        description: Computed diff score or distance metric.
+      summary:
+        type: text
+        required: true
+        description: "Short evidence-first finding summary."
+      details:
+        type: text
+        description: "Human-readable comparison notes and ambiguity context."
+      created_at:
+        type: datetime
+        required: true
+        description: Finding creation timestamp.
+      metadata:
+        type: jsonb
+        required: true
+        description: "Extra comparison data, evidence links, environment, and review status."
+    conflict_columns:
+      - id
+    indexes:
+      - columns: [run_id]
+        name: idx_result_findings_run_id
+      - columns: [severity]
+        name: idx_result_findings_severity

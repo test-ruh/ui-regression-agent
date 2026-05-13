@@ -1,0 +1,16 @@
+{
+  "name": "manual-only",
+  "enabled": false,
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 0 1 1 *",
+    "tz": "UTC"
+  },
+  "sessionTarget": "isolated",
+  "wakeMode": "now",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Manual or upstream workflow invocation only; no scheduled execution.",
+    "timeoutSeconds": 600
+  }
+}

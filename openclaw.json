@@ -1,0 +1,42 @@
+{
+  "name": "ui-regression-monitoring-agent",
+  "version": "1.0.1",
+  "description": "Captures UI screenshots and videos with Playwright CLI, compares them to QA-owned baselines, and produces evidence-first regression reports for manual QA review.",
+  "agent_metadata": {
+    "agent_name": "ui-regression-monitoring-agent",
+    "agent_id": "ui-regression-monitoring-agent",
+    "avatar": "🧪",
+    "tone": "Concise, objective, evidence-first, and explicit about ambiguity.",
+    "domain": "Quality assurance and UI visual regression monitoring",
+    "primary_users": "QA analysts, QA leads, and release testers running ad hoc visual checks across multiple environments.",
+    "automation_type": "read_only_human_in_the_loop_monitoring",
+    "schedule_description": "Manual or upstream workflow invocation, with a disabled manual-only cron target kept for operator-triggered runs.",
+    "cron_expression": "0 0 1 1 *"
+  },
+  "skills": [
+    "data-writer",
+    "result-query",
+    "github-action",
+    "capture-ui-artifacts",
+    "compare-visual-baselines",
+    "triage-regression-findings"
+  ],
+  "workflows": {
+    "main": "workflows/main.yaml"
+  },
+  "cron": {
+    "manual-only": "cron/manual-only.json"
+  },
+  "env": {
+    "required": [
+      "PG_CONNECTION_STRING",
+      "ORG_ID",
+      "AGENT_ID",
+      "BASELINE_ROOT",
+      "RESULT_ROOT",
+      "PLAYWRIGHT_BROWSERS_PATH",
+      "ARTIFACT_ROOT",
+      "REPORT_ROOT"
+    ]
+  }
+}

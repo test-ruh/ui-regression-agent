@@ -1,0 +1,30 @@
+name: main
+args:
+  run_id:
+    default: $(uuidgen)
+env:
+  RUN_ID: ${run_id}
+  PG_CONNECTION_STRING: ${PG_CONNECTION_STRING}
+  ORG_ID: ${ORG_ID}
+  AGENT_ID: ${AGENT_ID}
+steps:
+  - id: provision-schema
+    run: python3 scripts/data_writer.py provision
+    timeout_ms: 30000
+    retry: 0
+  - id: capture-ui-artifacts
+    run: bash skills/capture-ui-artifacts/scripts/run.sh
+    timeout_ms: 240000
+    retry: 1
+  - id: compare-visual-baselines
+    run: bash skills/compare-visual-baselines/scripts/run.sh
+    timeout_ms: 180000
+    retry: 1
+  - id: triage-regression-findings
+    run: bash skills/triage-regression-findings/scripts/run.sh
+    timeout_ms: 180000
+    retry: 0
+  - id: publish-review-summary
+    run: "set -euo pipefail\nmkdir -p \"${RESULT_ROOT}\"\ncat > \"${RESULT_ROOT}/workflow-summary.txt\" <<'EOF'\nUI regression monitoring completed in read-only mode. Review the QA markdown report in REPORT_ROOT and immutable evidence in ARTIFACT_ROOT.\nEOF"
+    timeout_ms: 30000
+    retry: 0

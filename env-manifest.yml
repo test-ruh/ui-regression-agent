@@ -1,0 +1,66 @@
+infrastructure:
+  - key: PG_CONNECTION_STRING
+    label: Postgres Connection String
+    required: true
+    secret: true
+    platform_managed: true
+    description: "Database connection string used by runtime helpers for schema provisioning and result-table writes."
+    how_to_get: Provision from the OpenClaw deployment environment.
+  - key: ORG_ID
+    label: Organization ID
+    required: true
+    secret: false
+    platform_managed: true
+    description: Organization identifier used by the OpenClaw runtime.
+    how_to_get: Provide the organization ID assigned to this deployment.
+  - key: AGENT_ID
+    label: Agent ID
+    required: true
+    secret: false
+    platform_managed: true
+    description: Agent identifier used by the OpenClaw runtime.
+    how_to_get: "Set to ui-regression-monitoring-agent for this deployment."
+  - key: BASELINE_ROOT
+    label: Baseline Root
+    required: true
+    secret: false
+    platform_managed: false
+    description: "Filesystem root containing QA-owned active baseline screenshots used for comparison."
+    how_to_get: Mount or provision the baseline artifact directory owned by the QA team.
+  - key: RESULT_ROOT
+    label: Result Root
+    required: true
+    secret: false
+    platform_managed: false
+    description: "Workspace root for generated manifests, intermediate comparison output, and state handoff files."
+    how_to_get: Set to the runtime results directory for this workflow.
+connector:
+  - key: PLAYWRIGHT_BROWSERS_PATH
+    label: Playwright Browsers Path
+    required: true
+    secret: false
+    platform_managed: false
+    description: Browser installation path used by Playwright CLI for capture runs.
+    how_to_get: Point to the Playwright browser cache or installed browser directory on the runner.
+  - key: CI
+    label: CI Flag
+    required: false
+    secret: false
+    platform_managed: false
+    description: Optional CI mode flag passed through to Playwright CLI.
+    how_to_get: "Set by the runner when CI-compatible Playwright behavior is needed."
+channel:
+  - key: ARTIFACT_ROOT
+    label: Artifact Root
+    required: true
+    secret: false
+    platform_managed: false
+    description: "Immutable storage root for screenshots, videos, manifests, and diff evidence retained for one month."
+    how_to_get: "Provision a writable artifact directory for this agent's evidence output."
+  - key: REPORT_ROOT
+    label: Report Root
+    required: true
+    secret: false
+    platform_managed: false
+    description: Output directory for the QA review report artifact.
+    how_to_get: "Provision a writable report directory for this agent's markdown review reports."

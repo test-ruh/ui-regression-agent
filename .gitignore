@@ -1,0 +1,21 @@
+# Secrets + local env
+.env
+.env.local
+
+# Python / Node build artefacts
+__pycache__/
+*.pyc
+node_modules/
+
+# OS junk
+.DS_Store
+
+# Runtime state
+.openclaw/
+logs/
+
+# Agent Factory internal pipeline state — NEVER push this
+.pipeline/
+
+# Architect-generated technical requirements doc (derived; regenerate-able)
+TRD.md
